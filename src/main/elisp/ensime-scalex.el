@@ -236,27 +236,6 @@
 	)))
 
 
-(defun ensime-scalex-request-sentinel (proc msg)
-  (when (equal (process-status proc) 'closed)
-    (let ((buf (process-buffer proc)))
-      (when buf
-	(with-current-buffer buf
-	  (let* ((json
-		  (buffer-substring-no-properties
-		   (point-min) (point-max)))
-		 (parsed (json-read-from-string json)))
-	    (when-let (results (cdr (assoc 'results parsed)))
-	      (when (buffer-live-p ensime-scalex-target-buffer)
-		(let ((results (ensime-scalex-make-results results)))
-		  (setq ensime-scalex-current-results results)
-		  (ensime-scalex-update-target-buffer)
-		  (ensime-event-sig :scalex-buffer-populated)
-		  )))
-	    )
-	  )
-	(kill-buffer buf))
-      )))
-
 (defun ensime-scalex-api-request (q &optional page per-page)
   "Hit the scalex api."
   (let* ((url (concat
@@ -282,17 +261,14 @@
                       (ensime-event-sig :scalex-buffer-populated))))))
     (kill-buffer buf)))
 
+
 (defun ensime-scalex-search ()
   "Launch a new search."
   (interactive)
   (let ((new-query (buffer-string)))
     (setq ensime-scalex-text new-query)
     (when (>= (length new-query) ensime-scalex-min-length)
-      (ensime-scalex-api-request new-query)
-      ;; (with-current-buffer ensime-scalex-target-buffer
-      ;;   (setq ensime-scalex-current-results nil)
-      ;;   (ensime-scalex-update-target-buffer))
-      )
+      (ensime-scalex-api-request new-query))
     (force-mode-line-update)))
 
 ;;
