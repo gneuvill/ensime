@@ -10,6 +10,8 @@
 *.fdb_latexmk
 *~
 *.json
+*.elc
+.history
 target/
 lib_managed/
 src_managed/
@@ -35,3 +37,4 @@ sublime*
 .ensime_port
 
 src/main/scala/org/ensime/server/Test.scala
+.ensime_lucene
